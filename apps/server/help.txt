@@ -1,0 +1,4 @@
+npm install --save nest-winston winston
+
+npm run migration:generate --name=init
+npm run migration:revert
