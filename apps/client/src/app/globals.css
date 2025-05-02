@@ -1,1 +1,16 @@
 @import 'tailwindcss';
+
+.white-classic {
+  --bg-main-color: #ffffff;
+  --text-color: #000000;
+}
+
+.dark-classic {
+  --bg-main-color: #000000;
+  --text-color: #ffffff;
+}
+
+@theme {
+  --color-bg-main-color: var(--bg-main-color);
+  --color-text-color: var(--text-color);
+}

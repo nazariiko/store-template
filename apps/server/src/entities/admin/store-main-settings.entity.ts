@@ -4,14 +4,8 @@ import { StoreTheme } from './store-theme.entity';
 
 @Entity()
 export class StoreMainSettings extends BaseCreatedUpdated {
-  @Column({ nullable: false, type: 'character varying' })
-  logoUrl: string;
-
   @Column({ nullable: false, type: 'boolean', default: true })
   isUserAuthEnabled: boolean;
-
-  @Column({ nullable: false, type: 'boolean', default: true })
-  isContactsInHeaderEnabled: boolean;
 
   @Column({ nullable: false, type: 'boolean', default: true })
   isSearchInHeaderEnabled: boolean;
@@ -27,9 +21,6 @@ export class StoreMainSettings extends BaseCreatedUpdated {
 
   @Column({ nullable: false, type: 'boolean', default: true })
   isRequirePhoneOnRegistrationEnabled: boolean;
-
-  @Column({ nullable: false, type: 'boolean', default: true })
-  isRequireEmailVerificationEnabled: boolean;
 
   @Column({ nullable: false })
   storeThemeId: number;

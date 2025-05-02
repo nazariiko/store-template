@@ -93,15 +93,12 @@ export class Init1745775936244 implements MigrationInterface {
               "createdDate" TIMESTAMP WITH TIME ZONE,
               "updatedByUserId" integer,
               "updatedDate" TIMESTAMP WITH TIME ZONE,
-              "logoUrl" character varying NOT NULL,
               "isUserAuthEnabled" boolean NOT NULL DEFAULT true,
-              "isContactsInHeaderEnabled" boolean NOT NULL DEFAULT true,
               "isSearchInHeaderEnabled" boolean NOT NULL DEFAULT true,
               "isFavoritesEnabled" boolean NOT NULL DEFAULT true,
               "isCommentsEnabled" boolean NOT NULL DEFAULT true,
               "isProductRatingEnabled" boolean NOT NULL DEFAULT true,
               "isRequirePhoneOnRegistrationEnabled" boolean NOT NULL DEFAULT true,
-              "isRequireEmailVerificationEnabled" boolean NOT NULL DEFAULT true,
               "storeThemeId" integer NOT NULL,
               CONSTRAINT "PK_5d3421a77fd11b05226b44feba3" PRIMARY KEY ("id")
           )
