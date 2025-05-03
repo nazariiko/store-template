@@ -3,7 +3,7 @@ import { getStoreHeaderSettings } from "../../../lib/api/store/store-main-settin
 export default function Footer() {
   return (
     <footer>
-      <div>Footer</div>
+      <div></div>
     </footer>
   );
 }

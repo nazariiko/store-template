@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 import { getStoreInitialSettings } from "@/lib/api/store/store-main-settings";
 import Header from "@/app/_components/Header/Header";
@@ -15,13 +16,19 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const storeInitialSettings = await getStoreInitialSettings();
+  const { storeTheme } = await getStoreInitialSettings();
   return (
-    <html lang="uk" className={storeInitialSettings.storeTheme.alias}>
+    <html lang="uk" suppressHydrationWarning>
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme={storeTheme.alias}
+          disableTransitionOnChange
+        >
+          <Header />
+          {children}
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );
