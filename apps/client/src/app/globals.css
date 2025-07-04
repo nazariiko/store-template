@@ -16,6 +16,10 @@
   max-width: 1536px;
 }
 
+.custom-phone-input input {
+  @apply text-base outline-none sm:text-sm;
+}
+
 @custom-variant dark (&:is(.dark *));
 @custom-variant light (&:is(.light *));
 

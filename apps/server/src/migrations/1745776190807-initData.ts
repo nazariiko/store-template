@@ -4,8 +4,8 @@ import { ROOT_USER_ID } from '../common/constants';
 export class InitData1745776190807 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-        INSERT INTO "user" ("id","name","email","isEmailVerified","phoneNumber","googleId","passwordHash","createdByUserId","createdDate","updatedByUserId","updatedDate") VALUES
-        (1, 'Root', 'nazarii.dev@gmail.com', true, null, null, '$2a$12$QgK4LXkTZCVTA6DvfiffNuOnYtnTQVoyObZPVjlj3yHK.vfH/9fK.', null, now(), null, now())
+        INSERT INTO "user" ("id","name","email","isEmailVerified","phoneNumber","googleId","passwordHash","refreshToken","createdByUserId","createdDate","updatedByUserId","updatedDate") VALUES
+        (1, 'Root', 'nazarii.dev@gmail.com', true, null, null, '$2a$12$QgK4LXkTZCVTA6DvfiffNuOnYtnTQVoyObZPVjlj3yHK.vfH/9fK.', null, null, now(), null, now())
       `);
     await queryRunner.query(`
         ALTER SEQUENCE user_id_seq RESTART WITH 2;
@@ -81,15 +81,15 @@ export class InitData1745776190807 implements MigrationInterface {
 
     await queryRunner.query(`
         INSERT INTO "store_theme" ("id","name","alias","createdByUserId","createdDate","updatedByUserId","updatedDate") VALUES
-        (1, 'White classic', 'white-classic', ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
-        (2, 'Dark classic', 'dark-classic', ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
+        (1, 'White', 'white', ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
+        (2, 'Dark', 'dark', ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
       `);
     await queryRunner.query(`
         ALTER SEQUENCE store_theme_id_seq RESTART WITH 3;
       `);
 
     await queryRunner.query(`
-        INSERT INTO "store_main_settings" ("id","isUserAuthEnabled","isSearchInHeaderEnabled","isFavoritesEnabled","isCommentsEnabled","isProductRatingEnabled","isRequirePhoneOnRegistrationEnabled","storeThemeId","createdByUserId","createdDate","updatedByUserId","updatedDate") VALUES
+        INSERT INTO "store_main_settings" ("id","isUserAuthEnabled","isSearchInHeaderEnabled","isFavoritesEnabled","isCommentsEnabled","isProductRatingEnabled","isThemeTogglerEnabled","storeThemeId","createdByUserId","createdDate","updatedByUserId","updatedDate") VALUES
         (1, true, true, true, true, true, true, 1, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
       `);
     await queryRunner.query(`

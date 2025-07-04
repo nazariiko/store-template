@@ -33,11 +33,18 @@ export class StoreMainSettingsController {
   public async getHeaderSettings(): Promise<IGetStoreHeaderSettingsResponse> {
     const item = (await this._storeMainSettingsService.findOneByOptions({
       where: { id: 1 },
+      relations: { storeTheme: true },
       select: {
         id: true,
         isFavoritesEnabled: true,
         isSearchInHeaderEnabled: true,
         isUserAuthEnabled: true,
+        isThemeTogglerEnabled: true,
+        storeTheme: {
+          id: true,
+          name: true,
+          alias: true,
+        },
       },
     })) as IGetStoreHeaderSettingsResponse;
     return item;

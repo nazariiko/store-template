@@ -18,7 +18,7 @@ export class User extends BaseCreatedUpdated {
   @Column({ nullable: false, type: 'boolean', default: false })
   isEmailVerified: boolean;
 
-  @Column({ nullable: true, type: 'character varying', length: 10 })
+  @Column({ nullable: true, type: 'character varying', length: 15 })
   phoneNumber?: string;
 
   @Column({ nullable: true, type: 'character varying' })
@@ -26,6 +26,9 @@ export class User extends BaseCreatedUpdated {
 
   @Column({ nullable: true, type: 'character varying' })
   passwordHash?: string;
+
+  @Column({ nullable: true, type: 'character varying' })
+  refreshToken?: string;
 
   @OneToMany(() => UserUserRole, (userUserRole) => userUserRole.user)
   userUserRoles?: UserUserRole[];

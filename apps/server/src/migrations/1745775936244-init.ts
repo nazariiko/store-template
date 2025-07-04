@@ -67,9 +67,10 @@ export class Init1745775936244 implements MigrationInterface {
               "name" character varying(250) NOT NULL,
               "email" character varying(250) NOT NULL,
               "isEmailVerified" boolean NOT NULL DEFAULT false,
-              "phoneNumber" character varying(10),
+              "phoneNumber" character varying(15),
               "googleId" character varying,
               "passwordHash" character varying,
+              "refreshToken" character varying,
               CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"),
               CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id")
           )
@@ -98,7 +99,7 @@ export class Init1745775936244 implements MigrationInterface {
               "isFavoritesEnabled" boolean NOT NULL DEFAULT true,
               "isCommentsEnabled" boolean NOT NULL DEFAULT true,
               "isProductRatingEnabled" boolean NOT NULL DEFAULT true,
-              "isRequirePhoneOnRegistrationEnabled" boolean NOT NULL DEFAULT true,
+              "isThemeTogglerEnabled" boolean NOT NULL DEFAULT true,
               "storeThemeId" integer NOT NULL,
               CONSTRAINT "PK_5d3421a77fd11b05226b44feba3" PRIMARY KEY ("id")
           )

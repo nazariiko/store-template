@@ -6,6 +6,7 @@ import { ControllerModule } from './modules/controller.module';
 import dbConfig from './config/db.config';
 import { WinstonModule } from 'nest-winston';
 import { WinstonOptions } from './config/log-config';
+import { AuthModule } from 'src/modules/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { WinstonOptions } from './config/log-config';
       inject: [ConfigService],
     }),
     WinstonModule.forRoot(WinstonOptions),
+    AuthModule,
     ServiceModule,
     ControllerModule,
   ],

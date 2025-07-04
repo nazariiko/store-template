@@ -1,12 +1,8 @@
+"use client";
+
 import LoginForm from "@/app/_components/Auth/LoginForm";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import RegisterForm from "@/app/_components/Auth/RegisterForm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DialogContent,
   DialogDescription,
@@ -18,7 +14,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 export default function AuthDialog() {
   return (
-    <DialogContent>
+    <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
       <DialogHeader>
         <VisuallyHidden>
           <DialogTitle>З поверненням! 👋</DialogTitle>
@@ -40,6 +36,16 @@ export default function AuthDialog() {
             </CardHeader>
             <CardContent>
               <LoginForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="register">
+          <Card>
+            <CardHeader>
+              <CardTitle>Покращіть свій досвід 🔥</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RegisterForm />
             </CardContent>
           </Card>
         </TabsContent>

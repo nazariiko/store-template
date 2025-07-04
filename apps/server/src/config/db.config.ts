@@ -1,4 +1,3 @@
-// db.config.ts
 import * as dotenv from 'dotenv';
 import { User } from '../entities/store/user.entity';
 import { UserRole } from '../entities/store/user-role.entity';

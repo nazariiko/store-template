@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { getStoreInitialSettings } from "@/lib/api/store/store-main-settings";
 import Header from "@/app/_components/Header/Header";
 import Footer from "@/app/_components/Footer/Footer";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Store template",
@@ -25,6 +26,7 @@ export default async function RootLayout({
           defaultTheme={storeTheme.alias}
           disableTransitionOnChange
         >
+          <Toaster richColors position="top-center" />
           <Header />
           {children}
           <Footer />

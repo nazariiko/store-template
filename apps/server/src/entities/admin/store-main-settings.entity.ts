@@ -20,7 +20,7 @@ export class StoreMainSettings extends BaseCreatedUpdated {
   isProductRatingEnabled: boolean;
 
   @Column({ nullable: false, type: 'boolean', default: true })
-  isRequirePhoneOnRegistrationEnabled: boolean;
+  isThemeTogglerEnabled: boolean;
 
   @Column({ nullable: false })
   storeThemeId: number;
