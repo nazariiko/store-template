@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../base/base.service';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/store/user.entity';
-import { IRegisterUserDto } from '@repo/dto';
+import { IRegisterUserByGoogleDto, IRegisterUserDto } from '@repo/dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { LOCALIZATION, ROOT_USER_ID } from 'src/common/constants';
@@ -16,6 +16,23 @@ export class UserService extends BaseService<User> {
     private configService: ConfigService,
   ) {
     super(repository);
+  }
+
+  async registerByGoogle(
+    registerUserDto: IRegisterUserByGoogleDto,
+  ): Promise<User> {
+    const { email, name, googleId } = registerUserDto;
+    const userModel: User = {
+      id: undefined,
+      passwordHash: null,
+      isEmailVerified: false,
+      refreshToken: null,
+      name: name,
+      email: email,
+      googleId: googleId,
+      ...this.getCreatedUpdated(ROOT_USER_ID),
+    };
+    return await this.create(userModel);
   }
 
   async register(registerUserDto: IRegisterUserDto): Promise<User> {
@@ -56,5 +73,10 @@ export class UserService extends BaseService<User> {
       },
     });
     return user;
+  }
+
+  async comparePasswords(password: string, hash: string): Promise<boolean> {
+    const isPasswordValid = await bcrypt.compare(password, hash);
+    return isPasswordValid;
   }
 }

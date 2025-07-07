@@ -41,7 +41,26 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('Invalid token payload');
       }
 
-      const user = await this._userService.getById(userId);
+      const user = await this._userService.findOneByOptions({
+        where: { id: userId },
+        relations: { userUserRoles: { userRole: true } },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isEmailVerified: true,
+          phoneNumber: true,
+          refreshToken: true,
+          userUserRoles: {
+            id: true,
+            userRole: {
+              id: true,
+              name: true,
+              alias: true,
+            },
+          },
+        },
+      });
       try {
         this.jwtService.verify(accessToken, {
           secret: this.configService.get('JWT_ACCESS_SECRET'),

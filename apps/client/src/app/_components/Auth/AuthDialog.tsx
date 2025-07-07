@@ -12,7 +12,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-export default function AuthDialog() {
+export default function AuthDialog({ onClose }: { onClose: () => void }) {
   return (
     <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
       <DialogHeader>
@@ -35,7 +35,7 @@ export default function AuthDialog() {
               <CardTitle>З поверненням! 👋</CardTitle>
             </CardHeader>
             <CardContent>
-              <LoginForm />
+              <LoginForm onClose={onClose} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -45,7 +45,7 @@ export default function AuthDialog() {
               <CardTitle>Покращіть свій досвід 🔥</CardTitle>
             </CardHeader>
             <CardContent>
-              <RegisterForm />
+              <RegisterForm onClose={onClose} />
             </CardContent>
           </Card>
         </TabsContent>

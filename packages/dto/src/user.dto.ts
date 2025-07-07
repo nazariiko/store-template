@@ -7,5 +7,4 @@ export interface IUser extends IBaseCreatedUpdated {
   phoneNumber?: string;
   googleId?: string;
   passwordHash?: string;
-  // userRoles: []
 }

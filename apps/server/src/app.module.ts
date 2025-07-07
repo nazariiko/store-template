@@ -7,6 +7,7 @@ import dbConfig from './config/db.config';
 import { WinstonModule } from 'nest-winston';
 import { WinstonOptions } from './config/log-config';
 import { AuthModule } from 'src/modules/auth.module';
+import { WatcherModule } from 'src/modules/watcher.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from 'src/modules/auth.module';
     AuthModule,
     ServiceModule,
     ControllerModule,
+    WatcherModule,
   ],
 })
 export class AppModule {}

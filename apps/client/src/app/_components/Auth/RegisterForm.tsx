@@ -24,6 +24,8 @@ import SubmitButton from "@/app/_components/ui/SubmitButton";
 import { getMe, registerUser } from "@/lib/api/store/auth";
 import { IRegisterUserDto } from "@repo/dto";
 import { toast } from "sonner";
+import { useUserStore } from "@/store/userStore";
+import { baseServerUrl } from "@/lib/api";
 
 const formSchema = z.object({
   email: z.string().email("Недійсна електронна адреса"),
@@ -39,7 +41,8 @@ const formSchema = z.object({
   phone: z.string().max(15).optional(),
 });
 
-export default function RegisterForm() {
+export default function RegisterForm({ onClose }: { onClose: () => void }) {
+  const setUser = useUserStore((state) => state.setUser);
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,9 +55,19 @@ export default function RegisterForm() {
     },
   });
 
+  const handleRegisterWithGoogle = () => {
+    const returnUrl = window.location.pathname;
+    window.location.href = `${baseServerUrl}/auth/google/register?returnUrl=${returnUrl}&type=register`;
+  };
+
   const onSuccessRegister = async () => {
     const response = await getMe();
-    debugger;
+    if (response.ok) {
+      setUser(response.data.user);
+      onClose();
+    } else {
+      toast.error(response.message);
+    }
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -67,9 +80,9 @@ export default function RegisterForm() {
     try {
       const response = await registerUser(data);
       if (!response.ok) {
-        toast.error(response.message, {});
+        toast.error(response.message);
       } else {
-        onSuccessRegister();
+        await onSuccessRegister();
       }
     } catch (error) {
       toast.error(error as string);
@@ -79,7 +92,13 @@ export default function RegisterForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Button variant="outline" size="lg" className="w-full" type="button">
+        <Button
+          onClick={() => handleRegisterWithGoogle()}
+          variant="outline"
+          size="lg"
+          className="w-full"
+          type="button"
+        >
           <Image
             src="/google-icon-logo.svg"
             alt="Google logo"

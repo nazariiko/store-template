@@ -3,9 +3,17 @@ import { StoreMainSettingsService } from '../services/admin/store-main-settings.
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import dbConfig from '../config/db.config';
+import { UserUserRoleService } from 'src/services/admin/user-user-role.service';
+import { UserRoleService } from 'src/services/admin/user-role.service';
+import { UserRoleUserRightService } from 'src/services/admin/user-role-user-right.service';
 
 const storeServices = [];
-const adminServices = [StoreMainSettingsService];
+const adminServices = [
+  StoreMainSettingsService,
+  UserUserRoleService,
+  UserRoleService,
+  UserRoleUserRightService,
+];
 
 const services = [...storeServices, ...adminServices];
 

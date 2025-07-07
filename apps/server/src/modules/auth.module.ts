@@ -6,11 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from 'src/controllers/auth/auth.controller';
 import { User } from 'src/entities/store/user.entity';
 import { AuthService } from 'src/services/auth/auth.service';
+import { GoogleStrategy } from 'src/services/auth/google.strategy';
 import { UserService } from 'src/services/auth/user.service';
 
 @Module({
   imports: [
-    PassportModule,
+    TypeOrmModule.forFeature([User]),
+    PassportModule.register({ defaultStrategy: 'google' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -20,10 +22,9 @@ import { UserService } from 'src/services/auth/user.service';
         },
       }),
     }),
-    TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService],
+  providers: [AuthService, UserService, GoogleStrategy],
 })
 export class AuthModule {
   constructor() {}

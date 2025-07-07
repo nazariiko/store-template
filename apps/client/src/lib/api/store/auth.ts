@@ -1,6 +1,6 @@
 import { IApiResponse } from "@/interfaces/api";
 import { baseServerUrl } from "@/lib/api";
-import { IRegisterUserDto } from "@repo/dto";
+import { IGetMeResponse, ILoginUserDto, IRegisterUserDto } from "@repo/dto";
 
 export const registerUser = async (
   registerUserDto: IRegisterUserDto,
@@ -14,6 +14,41 @@ export const registerUser = async (
       credentials: "include",
       body: JSON.stringify({
         ...registerUserDto,
+      }),
+    });
+    const json = await response.json();
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: json.message,
+        data: null,
+      };
+    } else {
+      return {
+        ok: true,
+        message: "",
+        data: {
+          userId: json.userId,
+        },
+      };
+    }
+  } catch (error) {
+    throw new Error("");
+  }
+};
+
+export const loginUser = async (
+  loginUserDto: ILoginUserDto,
+): Promise<IApiResponse> => {
+  try {
+    const response = await fetch(`${baseServerUrl}/auth/signin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        ...loginUserDto,
       }),
     });
     const json = await response.json();
@@ -58,7 +93,7 @@ export const getMe = async (): Promise<IApiResponse> => {
         ok: true,
         message: "",
         data: {
-          user: json.user,
+          user: json.user as IGetMeResponse,
         },
       };
     }

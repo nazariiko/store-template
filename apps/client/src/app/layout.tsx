@@ -6,6 +6,8 @@ import { getStoreInitialSettings } from "@/lib/api/store/store-main-settings";
 import Header from "@/app/_components/Header/Header";
 import Footer from "@/app/_components/Footer/Footer";
 import { Toaster } from "sonner";
+import { UserInitializer } from "@/components/user-init-provider";
+import { AuthFailedProvider } from "@/components/auth-failed-provider";
 
 export const metadata: Metadata = {
   title: "Store template",
@@ -28,6 +30,8 @@ export default async function RootLayout({
         >
           <Toaster richColors position="top-center" />
           <Header />
+          <UserInitializer />
+          <AuthFailedProvider />
           {children}
           <Footer />
         </ThemeProvider>

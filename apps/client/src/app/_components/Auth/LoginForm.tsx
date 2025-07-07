@@ -17,13 +17,20 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { ILoginUserDto } from "@repo/dto";
+import { getMe, loginUser } from "@/lib/api/store/auth";
+import { toast } from "sonner";
+import { useUserStore } from "@/store/userStore";
+import SubmitButton from "@/app/_components/ui/SubmitButton";
+import { baseServerUrl } from "@/lib/api";
 
 const formSchema = z.object({
   email: z.string().email("Недійсна електронна адреса"),
   password: z.string().min(1, "Обов'язкове поле"),
 });
 
-export default function LoginForm() {
+export default function LoginForm({ onClose }: { onClose: () => void }) {
+  const setUser = useUserStore((state) => state.setUser);
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,16 +40,48 @@ export default function LoginForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const handleLoginWithGoogle = () => {
+    const returnUrl = window.location.pathname;
+    window.location.href = `${baseServerUrl}/auth/google/login?returnUrl=${returnUrl}&type=login`;
+  };
+
+  const onSuccessLogin = async () => {
+    const response = await getMe();
+    if (response.ok) {
+      setUser(response.data.user);
+      onClose();
+    } else {
+      toast.error(response.message);
+    }
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const data: ILoginUserDto = {
+      email: values.email,
+      password: values.password,
+    };
+    try {
+      const response = await loginUser(data);
+      if (!response.ok) {
+        toast.error(response.message);
+      } else {
+        await onSuccessLogin();
+      }
+    } catch (error) {
+      toast.error(error as string);
+    }
+  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Button variant="outline" size="lg" className="w-full" type="button">
+        <Button
+          onClick={() => handleLoginWithGoogle()}
+          variant="outline"
+          size="lg"
+          className="w-full"
+          type="button"
+        >
           <Image
             src="/google-icon-logo.svg"
             alt="Google logo"
@@ -105,9 +144,9 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full" size="lg" type="submit">
+        <SubmitButton isSubmitting={form.formState.isSubmitting}>
           Увійти
-        </Button>
+        </SubmitButton>
       </form>
     </Form>
   );
