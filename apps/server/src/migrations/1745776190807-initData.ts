@@ -1,6 +1,5 @@
+import { ROOT_USER_ID } from '@repo/dto';
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { ROOT_USER_ID } from '../common/constants';
-
 export class InitData1745776190807 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -34,10 +33,11 @@ export class InitData1745776190807 implements MigrationInterface {
         (9, 'role_rights_change', 'Зміна прав ролей', 'Change role rights', null, null, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
         (10, 'user_create', 'Створення користувача', 'Create user', null, null, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
         (11, 'user_delete', 'Видалення користувача', 'Delete user', null, null, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
-        (12, 'user_edit', 'Редагування користувача', 'Edit user', null, null, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
+        (12, 'user_edit', 'Редагування користувача', 'Edit user', null, null, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
+        (13, 'admin_panel_access', 'Доступ до адмін панелі', 'Admin panel access', null, null, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
       `);
     await queryRunner.query(`
-        ALTER SEQUENCE user_right_id_seq RESTART WITH 13;
+        ALTER SEQUENCE user_right_id_seq RESTART WITH 14;
       `);
 
     await queryRunner.query(`
@@ -65,10 +65,12 @@ export class InitData1745776190807 implements MigrationInterface {
         (21, 2, 9, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
         (22, 2, 10, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
         (23, 2, 11, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
-        (24, 2, 12, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
+        (24, 2, 12, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
+        (25, 1, 13, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
+        (26, 2, 13, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
       `);
     await queryRunner.query(`
-        ALTER SEQUENCE user_role_user_right_id_seq RESTART WITH 25;
+        ALTER SEQUENCE user_role_user_right_id_seq RESTART WITH 27;
       `);
 
     await queryRunner.query(`

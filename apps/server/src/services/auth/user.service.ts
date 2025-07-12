@@ -2,10 +2,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../base/base.service';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/store/user.entity';
-import { IRegisterUserByGoogleDto, IRegisterUserDto } from '@repo/dto';
+import {
+  IRegisterUserByGoogleDto,
+  IRegisterUserDto,
+  ROOT_USER_ID,
+} from '@repo/dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { LOCALIZATION, ROOT_USER_ID } from 'src/common/constants';
+import { LOCALIZATION } from 'src/common/constants';
 import { NotFoundByIdException } from 'src/core/exception/not-found-by-id.exception';
 import { Converter } from 'src/core/utility/converter';
 
@@ -72,6 +76,31 @@ export class UserService extends BaseService<User> {
         email: email,
       },
     });
+    return user;
+  }
+
+  async getMe(userId: number): Promise<User> {
+    const user = await this.findOneByOptions({
+      where: { id: userId },
+      relations: { userUserRoles: { userRole: true } },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isEmailVerified: true,
+        phoneNumber: true,
+        refreshToken: true,
+        userUserRoles: {
+          id: true,
+          userRole: {
+            id: true,
+            name: true,
+            alias: true,
+          },
+        },
+      },
+    });
+
     return user;
   }
 

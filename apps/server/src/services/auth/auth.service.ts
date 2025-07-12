@@ -11,19 +11,122 @@ import {
   ILoginUserDto,
   IRegisterUserByGoogleDto,
   IRegisterUserDto,
+  UserRight,
 } from '@repo/dto';
+import { Request } from 'express';
 import { LOCALIZATION } from 'src/common/constants';
 import { Converter } from 'src/core/utility/converter';
 import { User } from 'src/entities/store/user.entity';
+import { UserRoleUserRightService } from 'src/services/admin/user-role-user-right.service';
 import { UserService } from 'src/services/auth/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly _userService: UserService,
+    private readonly _userRoleUserRight: UserRoleUserRightService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  #accessDeniedMessage = {
+    ok: false,
+    message: 'admin_panel_access_denied',
+    tokens: null,
+  };
+
+  async checkAdminAccess(
+    accessToken: string | undefined,
+    refreshToken: string | undefined,
+  ) {
+    if (!accessToken && !refreshToken) {
+      return this.#accessDeniedMessage;
+    }
+
+    // !access && refresh
+    if (!accessToken && refreshToken) {
+      const decoded = this.jwtService.decode(refreshToken);
+      if (!decoded) {
+        return this.#accessDeniedMessage;
+      } else {
+        const userId = +decoded.sub;
+        if (isNaN(userId)) {
+          return this.#accessDeniedMessage;
+        }
+
+        const user = await this._userService.getMe(userId);
+        if (refreshToken !== user.refreshToken) {
+          return this.#accessDeniedMessage;
+        }
+        try {
+          this.jwtService.verify(refreshToken, {
+            secret: this.configService.get('JWT_REFRESH_SECRET'),
+          });
+          return this.checkRightsAndGetTokens(user);
+        } catch {
+          return this.#accessDeniedMessage;
+        }
+      }
+    }
+
+    // access
+    const decoded = this.jwtService.decode(accessToken);
+    if (!decoded) {
+      return this.#accessDeniedMessage;
+    } else {
+      const userId = +decoded.sub;
+      if (isNaN(userId)) {
+        return this.#accessDeniedMessage;
+      }
+
+      const user = await this._userService.getMe(userId);
+      try {
+        this.jwtService.verify(accessToken, {
+          secret: this.configService.get('JWT_ACCESS_SECRET'),
+        });
+        return this.checkRightsAndGetTokens(user);
+      } catch {
+        const refreshToken = user.refreshToken;
+        if (!refreshToken) {
+          return this.#accessDeniedMessage;
+        } else {
+          try {
+            this.jwtService.verify(refreshToken, {
+              secret: this.configService.get('JWT_REFRESH_SECRET'),
+            });
+            return this.checkRightsAndGetTokens(user);
+          } catch (error) {
+            return this.#accessDeniedMessage;
+          }
+        }
+      }
+    }
+  }
+
+  async checkRightsAndGetTokens(user: User) {
+    const hasAccess = await this.hasAdminAccessByUser(user);
+    if (hasAccess) {
+      const tokens = this.generateTokens(user.id);
+      await this._userService.updateRefreshToken(user.id, tokens.refreshToken);
+      return {
+        ok: true,
+        tokens: tokens,
+        message: null,
+      };
+    } else {
+      return this.#accessDeniedMessage;
+    }
+  }
+
+  async hasAdminAccessByUser(user: User) {
+    const userRoles = user.userUserRoles.map((userUserRole) => {
+      return userUserRole.userRole;
+    });
+    const rights =
+      await this._userRoleUserRight.getUserRightsByRoles(userRoles);
+
+    return rights.includes(UserRight.ADMIN_PANEL_ACCESS);
+  }
 
   async registerUserByGoogle(registerUserDto: IRegisterUserByGoogleDto) {
     const { email, googleId } = registerUserDto;
@@ -47,6 +150,7 @@ export class AuthService {
       return {
         user: userExist,
         accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
       };
     }
 
@@ -56,6 +160,7 @@ export class AuthService {
     return {
       user,
       accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
     };
   }
 
@@ -81,6 +186,7 @@ export class AuthService {
       return {
         user: userExist,
         accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
       };
     }
 
@@ -92,6 +198,7 @@ export class AuthService {
     return {
       user: userExist,
       accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
     };
   }
 
@@ -122,12 +229,14 @@ export class AuthService {
     return {
       user: userExist,
       accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
     };
   }
 
   async registerUser(registerUserDto: IRegisterUserDto): Promise<{
     user: User;
     accessToken: string;
+    refreshToken: string;
   }> {
     const userExist = await this._userService.findByEmail(
       registerUserDto.email,
@@ -142,6 +251,7 @@ export class AuthService {
     return {
       user,
       accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
     };
   }
 
@@ -170,5 +280,13 @@ export class AuthService {
         expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN') || '2d',
       },
     );
+  }
+
+  async generateAndSetTokens(userId: number, req: Request) {
+    const newTokens = this.generateTokens(userId);
+    await this._userService.updateRefreshToken(userId, newTokens.refreshToken);
+
+    (req as any).refreshToken = newTokens.refreshToken;
+    (req as any).accessToken = newTokens.accessToken;
   }
 }

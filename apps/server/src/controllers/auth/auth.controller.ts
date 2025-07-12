@@ -10,10 +10,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ILoginUserDto, IRegisterUserDto } from '@repo/dto';
+import {
+  ILoginUserDto,
+  IRegisterUserDto,
+  TIME_15_MINS,
+  TIME_2_DAYS,
+} from '@repo/dto';
 import { AuthService } from 'src/services/auth/auth.service';
 import { Request, Response } from 'express';
-import { TIME_15_MINS } from 'src/common/constants';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/entities/store/user.entity';
 import { UserRoleUserRightService } from 'src/services/admin/user-role-user-right.service';
@@ -68,16 +72,16 @@ export class AuthController {
     const { returnUrl, type } = JSON.parse(json);
     const { email, name, googleId } = request.user as any;
 
-    let user: User, accessToken: string, message: string;
+    let user: User, accessToken: string, refreshToken: string, message: string;
     if (type === 'register') {
-      ({ user, accessToken, message } =
+      ({ user, accessToken, refreshToken, message } =
         await this._authService.registerUserByGoogle({
           name: name,
           email: email,
           googleId: googleId,
         }));
     } else if (type === 'login') {
-      ({ user, accessToken, message } =
+      ({ user, accessToken, refreshToken, message } =
         await this._authService.loginUserByGoogle({
           name: name,
           email: email,
@@ -99,6 +103,13 @@ export class AuthController {
       maxAge: TIME_15_MINS,
     });
 
+    response.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'strict',
+      maxAge: TIME_2_DAYS,
+    });
+
     response.redirect(
       `${this.configService.get('BASE_CLIENT_URL')}${returnUrl}`,
     );
@@ -109,7 +120,7 @@ export class AuthController {
     @Body() loginUserDto: ILoginUserDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { user, accessToken } =
+    const { user, accessToken, refreshToken } =
       await this._authService.loginUser(loginUserDto);
     const isProd = this.configService.get('NODE_ENV') === 'production';
 
@@ -118,6 +129,13 @@ export class AuthController {
       secure: isProd,
       sameSite: 'strict',
       maxAge: TIME_15_MINS,
+    });
+
+    response.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'strict',
+      maxAge: TIME_2_DAYS,
     });
 
     return {
@@ -131,7 +149,7 @@ export class AuthController {
     @Body() registerUserDto: IRegisterUserDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { user, accessToken } =
+    const { user, accessToken, refreshToken } =
       await this._authService.registerUser(registerUserDto);
     const isProd = this.configService.get('NODE_ENV') === 'production';
 
@@ -142,9 +160,23 @@ export class AuthController {
       maxAge: TIME_15_MINS,
     });
 
+    response.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'strict',
+      maxAge: TIME_2_DAYS,
+    });
+
     return {
       ok: true,
       userId: user.id,
     };
+  }
+
+  @Post('logout')
+  async logout(@Res() response: Response) {
+    response.clearCookie('access_token');
+    response.clearCookie('refresh_token');
+    return response.sendStatus(200);
   }
 }

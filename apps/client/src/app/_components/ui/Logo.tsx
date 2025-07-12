@@ -1,8 +1,9 @@
 import Image from "next/image";
 
-export default function Logo() {
+export default function Logo({ className }: { className: string }) {
+  const containerClassName = `relative ${className}`;
   return (
-    <div className="relative h-6 w-17">
+    <div className={containerClassName}>
       <Image
         className="block dark:hidden"
         src="/logo.svg"

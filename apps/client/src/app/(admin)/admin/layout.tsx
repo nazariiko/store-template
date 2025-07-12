@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-
+import "../../globals.css";
+import { ThemeProvider } from "@/app/_providers/theme-provider";
 import { getStoreInitialSettings } from "@/lib/api/store/store-main-settings";
-import Header from "@/app/_components/Header/Header";
-import Footer from "@/app/_components/Footer/Footer";
 import { Toaster } from "sonner";
-import { UserInitializer } from "@/components/user-init-provider";
-import { AuthFailedProvider } from "@/components/auth-failed-provider";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AdminSidebar } from "@/app/_components/Admin/AdminSidebar";
+import { UserInitializer } from "@/app/_providers/user-init-provider";
 
 export const metadata: Metadata = {
   title: "Store template",
@@ -20,6 +22,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { storeTheme } = await getStoreInitialSettings();
+
   return (
     <html lang="uk" suppressHydrationWarning>
       <body>
@@ -29,11 +32,17 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <Toaster richColors position="top-center" />
-          <Header />
           <UserInitializer />
-          <AuthFailedProvider />
-          {children}
-          <Footer />
+
+          <SidebarProvider>
+            <AdminSidebar />
+            <SidebarInset>
+              <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                <SidebarTrigger className="-ml-1" />
+              </header>
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>

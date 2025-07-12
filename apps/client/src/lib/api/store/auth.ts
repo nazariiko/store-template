@@ -101,3 +101,17 @@ export const getMe = async (): Promise<IApiResponse> => {
     throw new Error("");
   }
 };
+
+export const logout = async (): Promise<void> => {
+  try {
+    await fetch(`${baseServerUrl}/auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+  } catch (error) {
+    throw new Error("");
+  }
+};

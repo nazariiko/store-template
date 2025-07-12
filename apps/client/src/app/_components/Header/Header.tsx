@@ -1,7 +1,7 @@
 import HeaderUserActions, {
   SkeletonHeaderUserActions,
 } from "@/app/_components/Header/HeaderUserActions";
-import Logo from "@/app/_components/Header/Logo";
+import Logo from "@/app/_components/ui/Logo";
 import { Menu } from "lucide-react";
 import { Suspense } from "react";
 
@@ -14,7 +14,7 @@ export default async function Header() {
             <Menu className="cursor-pointer" />
           </div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform md:static md:top-auto md:left-auto md:translate-x-0 md:translate-y-0 md:transform-none">
-            <Logo />
+            <Logo className="h-6 w-17" />
           </div>
           <Suspense fallback={<SkeletonHeaderUserActions />}>
             <HeaderUserActions />

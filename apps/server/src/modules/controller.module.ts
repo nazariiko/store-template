@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AdminStoreMainSettingsController } from '../controllers/admin/store-main-settings.controller';
 import { StoreMainSettingsController } from '../controllers/store/store-main-settings.controller';
+import { AdminAuthController } from '../controllers/admin/admin-auth.controller';
 
 const storeControllers = [StoreMainSettingsController];
 

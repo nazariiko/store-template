@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AdminAuthController } from 'src/controllers/admin/admin-auth.controller';
 import { AuthController } from 'src/controllers/auth/auth.controller';
 import { User } from 'src/entities/store/user.entity';
 import { AuthService } from 'src/services/auth/auth.service';
@@ -23,7 +24,7 @@ import { UserService } from 'src/services/auth/user.service';
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AdminAuthController],
   providers: [AuthService, UserService, GoogleStrategy],
 })
 export class AuthModule {

@@ -1,5 +1,5 @@
 import Search from "@/app/_components/Header/Search";
-import ThemeToggler from "@/app/_components/Header/ThemeToggler";
+import ThemeToggler from "@/app/_components/ui/ThemeToggler";
 import UserCartIcon from "@/app/_components/Header/UserCartIcon";
 import UserFavoritesIcon from "@/app/_components/Header/UserFavoritesIcon";
 import UserPersonIcon from "@/app/_components/Header/UserPersonIcon";
