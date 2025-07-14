@@ -6,3 +6,4 @@ export * from './user-role.dto';
 export * from './user-user-role.dto';
 export * from './constants/index';
 export * from './enums/index';
+export * from './messages/index';

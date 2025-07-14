@@ -41,6 +41,8 @@ export class Init1745775936244 implements MigrationInterface {
               "updatedDate" TIMESTAMP WITH TIME ZONE,
               "name" character varying(50) NOT NULL,
               "alias" character varying(50) NOT NULL,
+              "uaName" character varying(50) NOT NULL,
+              "rank" integer NOT NULL,
               CONSTRAINT "PK_fb2e442d14add3cefbdf33c4561" PRIMARY KEY ("id")
           )
       `);

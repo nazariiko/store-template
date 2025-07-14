@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/app/_components/Admin/AdminSidebar";
 import { UserInitializer } from "@/app/_providers/user-init-provider";
+import AdminHeader from "@/app/_components/Admin/Header/AdminHeader";
 
 export const metadata: Metadata = {
   title: "Store template",
@@ -37,9 +38,7 @@ export default async function RootLayout({
           <SidebarProvider>
             <AdminSidebar />
             <SidebarInset>
-              <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                <SidebarTrigger className="-ml-1" />
-              </header>
+              <AdminHeader />
               {children}
             </SidebarInset>
           </SidebarProvider>

@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
+  IGetMeResponse,
   ILoginUserByGoogleDto,
   ILoginUserDto,
   IRegisterUserByGoogleDto,
@@ -16,6 +17,7 @@ import {
 import { Request } from 'express';
 import { LOCALIZATION } from 'src/common/constants';
 import { Converter } from 'src/core/utility/converter';
+import { UserRole } from 'src/entities/store/user-role.entity';
 import { User } from 'src/entities/store/user.entity';
 import { UserRoleUserRightService } from 'src/services/admin/user-role-user-right.service';
 import { UserService } from 'src/services/auth/user.service';
@@ -79,7 +81,7 @@ export class AuthService {
         return this.#accessDeniedMessage;
       }
 
-      const user = await this._userService.getMe(userId);
+      const user: IGetMeResponse = await this._userService.getMe(userId);
       try {
         this.jwtService.verify(accessToken, {
           secret: this.configService.get('JWT_ACCESS_SECRET'),
@@ -103,7 +105,7 @@ export class AuthService {
     }
   }
 
-  async checkRightsAndGetTokens(user: User) {
+  async checkRightsAndGetTokens(user: IGetMeResponse) {
     const hasAccess = await this.hasAdminAccessByUser(user);
     if (hasAccess) {
       const tokens = this.generateTokens(user.id);
@@ -118,12 +120,13 @@ export class AuthService {
     }
   }
 
-  async hasAdminAccessByUser(user: User) {
+  async hasAdminAccessByUser(user: IGetMeResponse) {
     const userRoles = user.userUserRoles.map((userUserRole) => {
       return userUserRole.userRole;
     });
-    const rights =
-      await this._userRoleUserRight.getUserRightsByRoles(userRoles);
+    const rights = await this._userRoleUserRight.getUserRightsByRoles(
+      userRoles as UserRole[],
+    );
 
     return rights.includes(UserRight.ADMIN_PANEL_ACCESS);
   }

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+  IGetMeResponse,
   ILoginUserDto,
   IRegisterUserDto,
   TIME_15_MINS,
@@ -29,26 +30,21 @@ import { GoogleLoginAuthGuard } from 'src/guards/auth-login-google.guard';
 export class AuthController {
   constructor(
     private readonly _authService: AuthService,
-    private readonly _userRoleUserRight: UserRoleUserRightService,
     private configService: ConfigService,
   ) {}
 
   @UseGuards(AuthGuard)
   @Get('me')
   async getMe(@Req() request: Request) {
-    const user: User = (request as any).user;
+    const user: IGetMeResponse = (request as any).user;
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    const userRoles = user.userUserRoles.map((userUserRole) => {
-      return userUserRole.userRole;
-    });
-    const rights =
-      await this._userRoleUserRight.getUserRightsByRoles(userRoles);
+
     return {
       user: {
-        ...(request as any).user,
-        rights,
+        ...user,
+        refreshToken: undefined,
       },
     };
   }

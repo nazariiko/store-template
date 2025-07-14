@@ -11,10 +11,10 @@ export class InitData1745776190807 implements MigrationInterface {
       `);
 
     await queryRunner.query(`
-        INSERT INTO "user_role" ("id","name","alias","createdByUserId","createdDate","updatedByUserId","updatedDate") VALUES
-        (1, 'Root', 'root', ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
-        (2, 'Admin', 'admin', ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
-        (3, 'Client', 'client', ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
+        INSERT INTO "user_role" ("id","name","alias","uaName","rank","createdByUserId","createdDate","updatedByUserId","updatedDate") VALUES
+        (1, 'Root', 'root', 'Власник', 0, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
+        (2, 'Admin', 'admin', 'Адміністратор', 1, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now()),
+        (3, 'Client', 'client', 'Клієнт', 999, ${ROOT_USER_ID}, now(), ${ROOT_USER_ID}, now())
       `);
     await queryRunner.query(`
         ALTER SEQUENCE user_role_id_seq RESTART WITH 4;

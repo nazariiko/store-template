@@ -31,6 +31,6 @@ export interface IGetMeResponse {
   isEmailVerified: boolean;
   phoneNumber?: string;
   refreshToken?: string;
-  userUserRoles: IUserUserRole[];
+  userUserRoles?: IUserUserRole[];
   rights: string[];
 }

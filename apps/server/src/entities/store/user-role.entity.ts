@@ -9,7 +9,13 @@ export class UserRole extends BaseCreatedUpdated {
   name: string;
 
   @Column({ nullable: false, type: 'character varying', length: 50 })
+  uaName: string;
+
+  @Column({ nullable: false, type: 'character varying', length: 50 })
   alias: string;
+
+  @Column({ nullable: false })
+  rank: number;
 
   @OneToMany(() => UserUserRole, (userUserRole) => userUserRole.userRole)
   userUserRoles?: UserUserRole[];

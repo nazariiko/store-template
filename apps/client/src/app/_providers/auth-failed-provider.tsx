@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { authErrorMessages } from "@/lib/messages";
+import { authErrorMessages } from "@repo/dto";
 
 export function AuthFailedProvider() {
   const searchParams = useSearchParams();

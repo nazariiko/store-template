@@ -10,4 +10,12 @@ export class UserRoleService extends BaseService<UserRole> {
   ) {
     super(repository);
   }
+
+  async checkExistence(name: string, alias: string, uaName: string) {
+    const userRole = await this.findOneByOptions({
+      where: [{ name: name }, { alias: alias }, { uaName: uaName }],
+    });
+
+    return Boolean(userRole);
+  }
 }

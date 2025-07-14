@@ -31,6 +31,8 @@ export class UserRoleUserRightService extends BaseService<UserRoleUserRight> {
       }
     }
 
-    return userRights;
+    const uniqueUserRights = [...new Set(userRights)];
+
+    return uniqueUserRights;
   }
 }

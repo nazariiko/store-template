@@ -3,20 +3,24 @@ import { BaseService } from '../base/base.service';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/store/user.entity';
 import {
+  IGetMeResponse,
   IRegisterUserByGoogleDto,
   IRegisterUserDto,
   ROOT_USER_ID,
+  UserRoleRanks,
 } from '@repo/dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { LOCALIZATION } from 'src/common/constants';
 import { NotFoundByIdException } from 'src/core/exception/not-found-by-id.exception';
 import { Converter } from 'src/core/utility/converter';
+import { UserRoleUserRightService } from 'src/services/admin/user-role-user-right.service';
 
 export class UserService extends BaseService<User> {
   constructor(
     @InjectRepository(User)
     repository: Repository<User>,
+    private _userRoleUserRightService: UserRoleUserRightService,
     private configService: ConfigService,
   ) {
     super(repository);
@@ -79,7 +83,7 @@ export class UserService extends BaseService<User> {
     return user;
   }
 
-  async getMe(userId: number): Promise<User> {
+  async getMe(userId: number): Promise<IGetMeResponse> {
     const user = await this.findOneByOptions({
       where: { id: userId },
       relations: { userUserRoles: { userRole: true } },
@@ -96,16 +100,38 @@ export class UserService extends BaseService<User> {
             id: true,
             name: true,
             alias: true,
+            rank: true,
+            uaName: true,
           },
         },
       },
     });
 
-    return user;
+    const userRoles = user.userUserRoles.map((userUserRole) => {
+      return userUserRole.userRole;
+    });
+    const rights =
+      await this._userRoleUserRightService.getUserRightsByRoles(userRoles);
+
+    return {
+      ...user,
+      rights: rights,
+    };
   }
 
   async comparePasswords(password: string, hash: string): Promise<boolean> {
     const isPasswordValid = await bcrypt.compare(password, hash);
     return isPasswordValid;
+  }
+
+  getUserRoleRank(user: IGetMeResponse): number {
+    const ranks = user.userUserRoles.map((userUserRole) => {
+      return userUserRole.userRole.rank;
+    });
+    if (!ranks.length) {
+      return UserRoleRanks.Client;
+    } else {
+      return Math.min(...ranks);
+    }
   }
 }

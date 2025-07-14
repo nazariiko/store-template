@@ -10,8 +10,7 @@ import {
 import { User } from 'src/entities/store/user.entity';
 import { UserUserRoleService } from 'src/services/admin/user-user-role.service';
 import { UserUserRole } from 'src/entities/store/user-user-role.entity';
-import { UserRoleId } from 'src/common/enums/user-role';
-import { ROOT_USER_ID } from '@repo/dto';
+import { ROOT_USER_ID, UserRoleId } from '@repo/dto';
 
 @EventSubscriber()
 export class UserWatcherService implements EntitySubscriberInterface<User> {
