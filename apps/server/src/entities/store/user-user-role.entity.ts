@@ -14,11 +14,11 @@ export class UserUserRole extends BaseCreatedUpdated {
 
   @ManyToOne(() => User, (user) => user.userUserRoles, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user: User;
+  user?: User;
 
   @ManyToOne(() => UserRole, (role) => role.userUserRoles, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userRoleId' })
-  userRole: UserRole;
+  userRole?: UserRole;
 }

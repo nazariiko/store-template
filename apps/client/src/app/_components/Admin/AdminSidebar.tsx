@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Logo from "@/app/_components/ui/Logo";
+import Link from "next/link";
 
 const data = {
   navMain: [
@@ -129,10 +130,10 @@ export function AdminSidebar({
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={pathname === item.url}>
-                      <a href={item.url}>
+                      <Link href={item.url}>
                         {item.icon}
                         {item.title}
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

@@ -21,12 +21,15 @@ import {
   UserRoleId,
   UserRoleRanks,
 } from '@repo/dto';
-import { NotFoundByIdException } from 'src/core/exception/not-found-by-id.exception';
 import { Permissions } from 'src/decorators/permissions.decorator';
+import { UserRoleUserRight } from 'src/entities/store/user-role-user-right.entity';
 import { UserRole } from 'src/entities/store/user-role.entity';
+import { UserUserRole } from 'src/entities/store/user-user-role.entity';
 import { AdminAuthGuard } from 'src/guards/auth-admin.guard';
 import { PermissionsGuard } from 'src/guards/permissions.guard';
+import { UserRoleUserRightService } from 'src/services/admin/user-role-user-right.service';
 import { UserRoleService } from 'src/services/admin/user-role.service';
+import { UserUserRoleService } from 'src/services/admin/user-user-role.service';
 import { UserService } from 'src/services/auth/user.service';
 
 @Controller('admin/user-role')
@@ -34,6 +37,7 @@ export class AdminUserRoleController {
   constructor(
     private readonly _userRoleService: UserRoleService,
     private readonly _userService: UserService,
+    private readonly _userRoleUserRightService: UserRoleUserRightService,
   ) {}
 
   @UseGuards(AdminAuthGuard)
@@ -42,12 +46,21 @@ export class AdminUserRoleController {
     const user: IGetMeResponse = (request as any).user;
     const userRank = this._userService.getUserRoleRank(user);
     const userRoles = await this._userRoleService.findByOptions({
+      relations: { userRoleUserRights: { userRight: true } },
       select: {
         id: true,
         name: true,
         uaName: true,
         alias: true,
         rank: true,
+        userRoleUserRights: {
+          id: true,
+          userRight: {
+            id: true,
+            uaName: true,
+            uaDescription: true,
+          },
+        },
       },
     });
 
@@ -74,7 +87,7 @@ export class AdminUserRoleController {
     const user: IGetMeResponse = (request as any).user;
     const userRank = this._userService.getUserRoleRank(user);
 
-    const { name, alias, uaName, rank } = body;
+    const { name, alias, uaName, rank, userRightIds } = body;
     const roleExists = await this._userRoleService.checkExistence(
       name,
       alias,
@@ -103,8 +116,18 @@ export class AdminUserRoleController {
       rank: rank,
       ...this._userRoleService.getCreatedUpdated(user.id),
     };
-
     const newUserRoleItem = await this._userRoleService.create(userRoleModel);
+
+    for (const userRightId of userRightIds) {
+      const userRoleUserRightModel: UserRoleUserRight = {
+        id: undefined,
+        userRoleId: newUserRoleItem.id,
+        userRightId: userRightId,
+        ...this._userRoleUserRightService.getCreatedUpdated(user.id),
+      };
+      await this._userRoleUserRightService.create(userRoleUserRightModel);
+    }
+
     return {
       ok: true,
       message: commonSuccessMessages.user_role_created,

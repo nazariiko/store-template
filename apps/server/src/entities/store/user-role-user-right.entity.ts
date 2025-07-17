@@ -17,11 +17,11 @@ export class UserRoleUserRight extends BaseCreatedUpdated {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userRoleId' })
-  userRole: UserRole;
+  userRole?: UserRole;
 
   @ManyToOne(() => UserRight, (userRight) => userRight.userRoleUserRights, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userRightId' })
-  userRight: UserRight;
+  userRight?: UserRight;
 }

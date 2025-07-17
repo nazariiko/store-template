@@ -28,6 +28,7 @@ export class AdminAuthGuard implements CanActivate {
 
     const accessToken = req.cookies['access_token'];
     const refreshToken = req.cookies['refresh_token'];
+    const shouldUpdateTokens = req.cookies['should_update_tokens'];
 
     // !access && !refresh
     if (!accessToken && !refreshToken) {
@@ -62,7 +63,9 @@ export class AdminAuthGuard implements CanActivate {
             );
           }
           (req as any).user = user;
-          await this.generateAndSetTokens(user.id, res);
+          shouldUpdateTokens === 'false'
+            ? ''
+            : await this.generateAndSetTokens(user.id, res);
           return true;
         } catch {
           throw new UnauthorizedException('Refresh token expired');
@@ -115,7 +118,9 @@ export class AdminAuthGuard implements CanActivate {
               );
             }
             (req as any).user = user;
-            await this.generateAndSetTokens(user.id, res);
+            shouldUpdateTokens === 'false'
+              ? ''
+              : await this.generateAndSetTokens(user.id, res);
             return true;
           } catch (error) {
             throw new UnauthorizedException('Refresh token expired.');

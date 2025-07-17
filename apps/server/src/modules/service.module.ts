@@ -6,6 +6,7 @@ import dbConfig from '../config/db.config';
 import { UserUserRoleService } from 'src/services/admin/user-user-role.service';
 import { UserRoleService } from 'src/services/admin/user-role.service';
 import { UserRoleUserRightService } from 'src/services/admin/user-role-user-right.service';
+import { UserRightService } from 'src/services/admin/user-right.service';
 
 const storeServices = [];
 const adminServices = [
@@ -13,6 +14,7 @@ const adminServices = [
   UserUserRoleService,
   UserRoleService,
   UserRoleUserRightService,
+  UserRightService,
 ];
 
 const services = [...storeServices, ...adminServices];

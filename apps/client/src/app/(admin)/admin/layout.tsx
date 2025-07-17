@@ -3,14 +3,8 @@ import "../../globals.css";
 import { ThemeProvider } from "@/app/_providers/theme-provider";
 import { getStoreInitialSettings } from "@/lib/api/store/store-main-settings";
 import { Toaster } from "sonner";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { AdminSidebar } from "@/app/_components/Admin/AdminSidebar";
 import { UserInitializer } from "@/app/_providers/user-init-provider";
-import AdminHeader from "@/app/_components/Admin/Header/AdminHeader";
+import { UserWrapper } from "@/app/_providers/user-wrapper";
 
 export const metadata: Metadata = {
   title: "Store template",
@@ -32,16 +26,9 @@ export default async function RootLayout({
           defaultTheme={storeTheme.alias}
           disableTransitionOnChange
         >
-          <Toaster richColors position="top-center" />
           <UserInitializer />
-
-          <SidebarProvider>
-            <AdminSidebar />
-            <SidebarInset>
-              <AdminHeader />
-              {children}
-            </SidebarInset>
-          </SidebarProvider>
+          <Toaster richColors position="top-center" />
+          <UserWrapper>{children}</UserWrapper>
         </ThemeProvider>
       </body>
     </html>

@@ -11,7 +11,7 @@ function AdminHeader() {
       <AdminHeaderPageName />
       <div className="ml-auto flex items-center gap-4">
         <Link href="/">
-          <Button variant="default">Повернутись в магазин</Button>
+          <Button variant="default">В магазин</Button>
         </Link>
         <ThemeToggler />
       </div>
