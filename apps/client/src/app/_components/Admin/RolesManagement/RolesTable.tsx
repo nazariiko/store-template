@@ -1,6 +1,8 @@
 "use client";
 
 import { CreateRoleModal } from "@/app/_components/Admin/RolesManagement/CreateRoleModal";
+import { DeleteRoleDialog } from "@/app/_components/Admin/RolesManagement/DeleteRoleDialog";
+import { EditRoleModal } from "@/app/_components/Admin/RolesManagement/EditRoleModal";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -168,6 +170,25 @@ export function RolesTable({
         onCreate={onCreate}
         userRights={userRights}
       />
+
+      {isEditOpen && selectedRole && (
+        <EditRoleModal
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          onCreate={onEdit}
+          userRights={userRights}
+          role={selectedRole as IGetUserRolesWithIsEditableResponse}
+        />
+      )}
+
+      {isDeleteOpen && selectedRole && (
+        <DeleteRoleDialog
+          isOpen={isDeleteOpen}
+          onClose={() => setIsDeleteOpen(false)}
+          onDelete={onDelete}
+          role={selectedRole as IGetUserRolesWithIsEditableResponse}
+        />
+      )}
     </div>
   );
 }

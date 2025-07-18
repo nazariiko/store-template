@@ -22,6 +22,7 @@ export interface IUpdateUserRoleDto {
   alias: string;
   uaName: string;
   rank: number;
+  userRightIds: number[];
 }
 
 export interface IGetUserRolesWithIsEditableResponse extends IBase {

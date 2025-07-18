@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { TypographyLarge, TypographyP } from "@/components/ui/typography";
-import { createUserRole } from "@/lib/api/admin/user-roles";
+import { createUserRole, updateUserRole } from "@/lib/api/admin/user-roles";
 import { getUserRank } from "@/lib/helpers/user.helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -27,16 +27,18 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-export function CreateRoleModal({
+export function EditRoleModal({
   isOpen,
   onClose,
   onCreate,
   userRights,
+  role,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (newRole: IGetUserRolesWithIsEditableResponse) => void;
   userRights: IGetUserRightsResponse[];
+  role: IGetUserRolesWithIsEditableResponse;
 }) {
   const userRank = getUserRank();
   const minRankUserCanCreate = userRank + 1;
@@ -68,11 +70,13 @@ export function CreateRoleModal({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      uaName: "",
-      alias: "",
-      rank: minRankUserCanCreate,
-      selectedRights: userRights.map((userRight) => userRight.id),
+      name: role.name,
+      uaName: role.uaName,
+      alias: role.alias,
+      rank: role.rank,
+      selectedRights: role.userRoleUserRights.map(
+        (userRoleUserRight) => userRoleUserRight.userRight.id,
+      ),
     },
   });
 
@@ -90,7 +94,11 @@ export function CreateRoleModal({
       userRightIds: data.selectedRights,
     };
 
-    const { ok, message, data: responseData } = await createUserRole(dto);
+    const {
+      ok,
+      message,
+      data: responseData,
+    } = await updateUserRole(dto, role.id);
     if (ok) {
       toast.success(message);
       form.reset();
@@ -110,7 +118,7 @@ export function CreateRoleModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>Створення нової ролі</DialogTitle>
+          <DialogTitle>Редагування ролі</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
