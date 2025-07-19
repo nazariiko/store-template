@@ -12,6 +12,10 @@ const pathNamesData = [
     pathname: "/admin/settings/roles",
     uaName: "Налаштування: Ролі і доступи",
   },
+  {
+    pathname: "/admin/settings/users",
+    uaName: "Налаштування: Користувачі",
+  },
 ];
 
 function AdminHeaderPageName() {

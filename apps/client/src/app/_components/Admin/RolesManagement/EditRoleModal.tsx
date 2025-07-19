@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { TypographyLarge, TypographyP } from "@/components/ui/typography";
-import { createUserRole, updateUserRole } from "@/lib/api/admin/user-roles";
+import { updateUserRole } from "@/lib/api/admin/user-roles";
 import { getUserRank } from "@/lib/helpers/user.helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
