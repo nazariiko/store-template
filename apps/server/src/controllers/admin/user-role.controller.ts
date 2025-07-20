@@ -15,6 +15,7 @@ import {
   commonErrorMessages,
   commonSuccessMessages,
   ICreateUserRoleDto,
+  IGetAllUserRolesResponse,
   IGetMeResponse,
   IUpdateUserRoleDto,
   UserRight,
@@ -40,6 +41,20 @@ export class AdminUserRoleController {
     private readonly _userRoleUserRightService: UserRoleUserRightService,
     private readonly _dataSource: DataSource,
   ) {}
+
+  @UseGuards(AdminAuthGuard)
+  @Get('all')
+  async getAll(): Promise<IGetAllUserRolesResponse[]> {
+    const userRoles = await this._userRoleService.findByOptions({
+      select: {
+        id: true,
+        uaName: true,
+        alias: true,
+      },
+    });
+
+    return userRoles;
+  }
 
   @UseGuards(AdminAuthGuard)
   @Get('list-with-is-editable')

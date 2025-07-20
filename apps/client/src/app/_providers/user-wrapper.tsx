@@ -25,7 +25,7 @@ export function UserWrapper({ children }: { children: React.ReactNode }) {
     <>
       <SidebarProvider>
         <AdminSidebar />
-        <SidebarInset>
+        <SidebarInset className="overflow-x-auto">
           <AdminHeader />
           {children}
         </SidebarInset>

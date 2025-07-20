@@ -33,3 +33,8 @@ export interface IGetUserRolesWithIsEditableResponse extends IBase {
   isEditable: boolean;
   userRoleUserRights: IUserRoleUserRight[];
 }
+
+export interface IGetAllUserRolesResponse extends IBase {
+  uaName: string;
+  alias: string;
+}

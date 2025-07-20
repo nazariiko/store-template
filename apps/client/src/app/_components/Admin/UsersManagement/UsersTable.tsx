@@ -12,19 +12,38 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TypographyH4 } from "@/components/ui/typography";
-import { IGetUsersListFilters, IGetUsersResponse, IUser } from "@repo/dto";
+import {
+  IGetAllUserRolesResponse,
+  IGetUsersListFilters,
+  IGetUsersResponse,
+  IUser,
+} from "@repo/dto";
 import {
   useReactTable,
   ColumnDef,
   flexRender,
   getCoreRowModel,
 } from "@tanstack/react-table";
-import { EditIcon, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, EditIcon, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import { getUsers } from "@/lib/api/admin/user";
+import { Skeleton } from "@/components/ui/skeleton";
+import { MultiSelect } from "@/components/ui/multi-select";
 
-export function UsersTable({ data: initialData }: { data: IGetUsersResponse }) {
+export function UsersTable({
+  data: initialData,
+  userRoles,
+}: {
+  data: IGetUsersResponse;
+  userRoles: IGetAllUserRolesResponse[];
+}) {
+  const rolesList = userRoles.map((userRole) => {
+    return {
+      value: userRole.alias,
+      label: userRole.uaName,
+    };
+  });
   const [data, setData] = useState(initialData.data);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(initialData.hasNextPage);
@@ -34,14 +53,51 @@ export function UsersTable({ data: initialData }: { data: IGetUsersResponse }) {
   const [nameFilter, setNameFilter] = useState("");
   const [emailFilter, setEmailFilter] = useState("");
   const [phoneNumberFilter, setPhoneNumberFilter] = useState("");
-  const [selectedUserRolesIds, setSelectedUserRolesIds] = useState<number[]>(
-    [],
-  );
+  const [selectedUserRoles, setSelectedUserRoles] = useState<string[]>([]);
+
+  const handlePreviousPage = async () => {
+    const currentPage = page;
+    setPage(page - 1);
+    setIsLoading(true);
+    const users = await getUsers({
+      pageNumber: currentPage - 1,
+      limit: 10,
+      filters: getFiltersObject(
+        nameFilter,
+        emailFilter,
+        phoneNumberFilter,
+        selectedUserRoles,
+      ),
+    });
+    setIsLoading(false);
+    setData(users.data);
+    setHasNextPage(users.hasNextPage);
+  };
+
+  const handleNextPage = async () => {
+    const currentPage = page;
+    setPage(page + 1);
+    setIsLoading(true);
+    const users = await getUsers({
+      pageNumber: currentPage + 1,
+      limit: 10,
+      filters: getFiltersObject(
+        nameFilter,
+        emailFilter,
+        phoneNumberFilter,
+        selectedUserRoles,
+      ),
+    });
+    setIsLoading(false);
+    setData(users.data);
+    setHasNextPage(users.hasNextPage);
+  };
 
   const getFiltersObject = (
     name: string,
     email: string,
     phoneNumber: string,
+    userRoleAliases: string[],
   ): IGetUsersListFilters => {
     const filters: IGetUsersListFilters = {};
     if (name) {
@@ -53,15 +109,18 @@ export function UsersTable({ data: initialData }: { data: IGetUsersResponse }) {
     if (phoneNumber) {
       filters.phoneNumber = phoneNumber;
     }
-    if (selectedUserRolesIds.length) {
-      filters.userRoleIds = selectedUserRolesIds;
+    if (userRoleAliases.length) {
+      filters.userRoleIds = userRoleAliases.map((alias) => {
+        return userRoles.find((userRole) => userRole.alias === alias)
+          ?.id as number;
+      });
     }
 
     return filters;
   };
 
   const debouncedApiCall = useMemo(() => {
-    return debounce(async (name, email, phoneNumber) => {
+    return debounce(async (name, email, phoneNumber, userRoles) => {
       if (!isMounted.current) {
         isMounted.current = true;
         return;
@@ -71,8 +130,8 @@ export function UsersTable({ data: initialData }: { data: IGetUsersResponse }) {
       setIsLoading(true);
       const users = await getUsers({
         pageNumber: 1,
-        limit: 15,
-        filters: getFiltersObject(name, email, phoneNumber),
+        limit: 10,
+        filters: getFiltersObject(name, email, phoneNumber, userRoles),
       });
       setIsLoading(false);
       setData(users.data);
@@ -81,8 +140,19 @@ export function UsersTable({ data: initialData }: { data: IGetUsersResponse }) {
   }, []);
 
   useEffect(() => {
-    debouncedApiCall(nameFilter, emailFilter, phoneNumberFilter);
-  }, [nameFilter, emailFilter, phoneNumberFilter, debouncedApiCall]);
+    debouncedApiCall(
+      nameFilter,
+      emailFilter,
+      phoneNumberFilter,
+      selectedUserRoles,
+    );
+  }, [
+    nameFilter,
+    emailFilter,
+    phoneNumberFilter,
+    selectedUserRoles,
+    debouncedApiCall,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -135,7 +205,6 @@ export function UsersTable({ data: initialData }: { data: IGetUsersResponse }) {
       cell: ({ row }) => {
         return (
           <div className="flex justify-end gap-2">
-            {" "}
             <Button variant="ghost" size="icon" onClick={() => {}}>
               <EditIcon />
             </Button>
@@ -211,19 +280,17 @@ export function UsersTable({ data: initialData }: { data: IGetUsersResponse }) {
                       />
                     </div>
                   </TableHead>
-                  <TableHead>
-                    {/* <MultiSelect
-                      options={userRoles.map((role) => ({
-                        value: role.id.toString(),
-                        label: role.uaName,
-                      }))}
-                      onChange={(values) =>
-                        setSelectedRoles(values.map((v) => parseInt(v)))
-                      }
-                      value={selectedRoles.map((id) => id.toString())}
-                      placeholder="Select roles..."
-                      className="w-full max-w-xs text-sm"
-                    /> */}
+                  <TableHead className="py-1">
+                    <div className="flex w-full max-w-sm items-center">
+                      <MultiSelect
+                        options={rolesList}
+                        onValueChange={setSelectedUserRoles}
+                        defaultValue={selectedUserRoles}
+                        placeholder="Оберіть ролі"
+                        variant="default"
+                        maxCount={0}
+                      />
+                    </div>
                   </TableHead>
                   <TableHead />
                   <TableHead />
@@ -232,35 +299,74 @@ export function UsersTable({ data: initialData }: { data: IGetUsersResponse }) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{ width: cell.column.getSize() }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+            {
+              // -- PERHAPS IT WOULD BE BETTER WITHOUT SKELETON
+              // isLoading ? (
+              //   <TableRow className="hover:bg-transparent">
+              //     <TableCell colSpan={columns.length} className="px-0 pt-3 pb-0">
+              //       <PreloadDataSkeleton />
+              //     </TableCell>
+              //   </TableRow>
+              // ):
+              table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{ width: cell.column.getSize() }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-gray-500"
+                  >
+                    Немає даних
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-gray-500"
-                >
-                  Немає даних
-                </TableCell>
-              </TableRow>
-            )}
+              )
+            }
           </TableBody>
         </Table>
       </div>
+      <div className="mt-3 flex w-full items-center justify-end gap-2">
+        <Button
+          size={"icon"}
+          variant={"ghost"}
+          disabled={page === 1 || isLoading}
+          onClick={handlePreviousPage}
+        >
+          <ChevronLeft />
+        </Button>
+        <div className="bg-primary flex h-[36px] w-[36px] items-center justify-center rounded-md">
+          <span className="text-primary-foreground">{page}</span>
+        </div>
+        <Button
+          size={"icon"}
+          variant={"ghost"}
+          disabled={!hasNextPage || isLoading}
+          onClick={handleNextPage}
+        >
+          <ChevronRight />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function PreloadDataSkeleton() {
+  return (
+    <div className="w-full">
+      <Skeleton className="h-[150px] w-full" />
     </div>
   );
 }
