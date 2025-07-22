@@ -217,7 +217,10 @@ export default function RegisterForm({ onClose }: { onClose: () => void }) {
             )}
           />
         </div>
-        <SubmitButton isSubmitting={form.formState.isSubmitting}>
+        <SubmitButton
+          className="w-full"
+          isSubmitting={form.formState.isSubmitting}
+        >
           Створити акаунт
         </SubmitButton>
       </form>

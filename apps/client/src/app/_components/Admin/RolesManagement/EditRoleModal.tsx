@@ -235,7 +235,10 @@ export function EditRoleModal({
                 ))}
               </div>
             </div>
-            <SubmitButton isSubmitting={form.formState.isSubmitting}>
+            <SubmitButton
+              className="w-full"
+              isSubmitting={form.formState.isSubmitting}
+            >
               Зберегти
             </SubmitButton>
           </form>

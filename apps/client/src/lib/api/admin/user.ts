@@ -2,7 +2,11 @@
 
 import { cookies } from "next/headers";
 import { baseServerUrl } from "@/lib/api";
-import { IGetUsersListFilters, IGetUsersResponse } from "@repo/dto";
+import {
+  IGetUserResponse,
+  IGetUsersListFilters,
+  IGetUsersResponse,
+} from "@repo/dto";
 
 export const getUsers = async (body: {
   pageNumber: number;
@@ -22,6 +26,27 @@ export const getUsers = async (body: {
     body: JSON.stringify({
       ...body,
     }),
+  });
+  return data.json();
+};
+
+export const getUser = async (
+  id: number,
+): Promise<{
+  ok: boolean;
+  message?: string;
+  data?: { user: IGetUserResponse };
+}> => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+  const refreshToken = cookieStore.get("refresh_token")?.value;
+  const data = await fetch(`${baseServerUrl}/admin/user/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `access_token=${accessToken}; refresh_token=${refreshToken}; should_update_tokens=${false}`,
+    },
+    credentials: "include",
   });
   return data.json();
 };

@@ -13,6 +13,7 @@ export const commonErrorMessages = {
   user_role_rank_error: 'У вас немає прав створювати/редагувати/видаляти роль з таким рангом',
   user_role_not_exists: 'Ролі не існує',
   user_role_client_cannot_delete: 'Не можна видаляти роль клієнта',
+  user_not_exists: 'Юзера з таким ідентифікатором не існує',
 } as const;
 
 export type CommonErrorCode = keyof typeof commonErrorMessages;

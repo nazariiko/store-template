@@ -124,7 +124,9 @@ export class UserService extends BaseService<User> {
     return isPasswordValid;
   }
 
-  getUserRoleRank(user: IGetMeResponse): number {
+  getUserRoleRank(
+    user: IGetMeResponse | Omit<IGetMeResponse, 'rights'>,
+  ): number {
     const ranks = user.userUserRoles.map((userUserRole) => {
       return userUserRole.userRole.rank;
     });

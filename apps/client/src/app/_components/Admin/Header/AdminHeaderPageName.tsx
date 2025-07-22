@@ -2,27 +2,39 @@
 
 import { TypographyH4 } from "@/components/ui/typography";
 import { usePathname } from "next/navigation";
+interface PathNameConfig {
+  regex: RegExp;
+  uaName: string;
+}
 
-const pathNamesData = [
+const pathNamesData: PathNameConfig[] = [
   {
-    pathname: "/admin/dashboard",
+    regex: /^\/admin\/dashboard$/,
     uaName: "Дашборд",
   },
   {
-    pathname: "/admin/settings/roles",
+    regex: /^\/admin\/settings\/roles$/,
     uaName: "Налаштування: Ролі і доступи",
   },
   {
-    pathname: "/admin/settings/users",
+    regex: /^\/admin\/settings\/users$/,
     uaName: "Налаштування: Користувачі",
+  },
+  {
+    regex: /^\/admin\/settings\/users\/\d+$/,
+    uaName: "Налаштування: Користувач",
   },
 ];
 
 function AdminHeaderPageName() {
   const pathname = usePathname();
-  const uaName = pathNamesData.find(
-    (item) => item.pathname === pathname,
-  )?.uaName;
+
+  const matchedPath = pathNamesData.find((item) => item.regex.test(pathname));
+  const uaName = matchedPath?.uaName || null;
+
+  if (!uaName) {
+    return null;
+  }
 
   return (
     <div>

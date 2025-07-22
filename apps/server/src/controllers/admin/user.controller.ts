@@ -3,11 +3,19 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
+  ParseIntPipe,
   Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { IGetMeResponse, IGetUsersListFilters } from '@repo/dto';
+import {
+  commonErrorMessages,
+  IGetMeResponse,
+  IGetUserResponse,
+  IGetUsersListFilters,
+  UserRight,
+} from '@repo/dto';
 import { Request } from 'express';
 import { DEFAULT_PAGE_LIMIT } from 'src/common/constants';
 import { DataPageResponse } from 'src/core/interfaces/data-page-response';
@@ -22,6 +30,59 @@ export class AdminUserController {
     private readonly _userService: UserService,
     private readonly _dataSource: DataSource,
   ) {}
+
+  @UseGuards(AdminAuthGuard)
+  @Get(':id')
+  async getById(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: Request,
+  ) {
+    const item = await this._userService.findOneByOptions({
+      where: { id: id },
+      relations: { userUserRoles: { userRole: true } },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        isEmailVerified: true,
+        userUserRoles: {
+          id: true,
+          userRole: {
+            id: true,
+            uaName: true,
+            alias: true,
+            rank: true,
+          },
+        },
+      },
+    });
+    if (!item) {
+      return {
+        ok: false,
+        message: commonErrorMessages.user_not_exists,
+      };
+    }
+
+    const user: IGetMeResponse = (request as any).user;
+    const userRank = this._userService.getUserRoleRank(user);
+    const itemRank = this._userService.getUserRoleRank(item);
+
+    const responseUser: IGetUserResponse = {
+      ...item,
+      deletable:
+        user.rights.includes(UserRight.USER_DELETE) && userRank < itemRank,
+      editable:
+        user.rights.includes(UserRight.USER_EDIT) && userRank < itemRank,
+    };
+
+    return {
+      ok: true,
+      data: {
+        user: responseUser,
+      },
+    };
+  }
 
   @UseGuards(AdminAuthGuard)
   @Post('list')

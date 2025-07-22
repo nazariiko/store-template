@@ -1,10 +1,18 @@
 import UsersManagement from "@/app/_components/Admin/UsersManagement/UsersManagement";
+import ToastErrorProvider from "@/app/_providers/toast-error-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 
-export default async function SettingsUsersPage() {
+export default async function SettingsUsersPage({
+  searchParams,
+}: {
+  searchParams: { error?: string };
+}) {
+  const { error } = await searchParams;
+
   return (
     <div className="px-4 py-6">
+      <ToastErrorProvider message={error} />
       <Suspense fallback={<UsersManagementSkeleton />}>
         <UsersManagement />
       </Suspense>

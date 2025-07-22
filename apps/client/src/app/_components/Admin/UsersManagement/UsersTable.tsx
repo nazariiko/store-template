@@ -30,6 +30,7 @@ import { debounce } from "lodash";
 import { getUsers } from "@/lib/api/admin/user";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MultiSelect } from "@/components/ui/multi-select";
+import Link from "next/link";
 
 export function UsersTable({
   data: initialData,
@@ -205,9 +206,11 @@ export function UsersTable({
       cell: ({ row }) => {
         return (
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" size="icon" onClick={() => {}}>
-              <EditIcon />
-            </Button>
+            <Link href={`/admin/settings/users/${row.original.id}`}>
+              <Button variant="ghost" size="icon">
+                <EditIcon />
+              </Button>
+            </Link>
           </div>
         );
       },

@@ -22,3 +22,13 @@ export interface IGetUsersResponse {
   data: Omit<IUser, 'googleId' | 'passwordHash'>[];
   hasNextPage: boolean;
 }
+
+export interface IGetUserResponse {
+  name: string;
+  email: string;
+  isEmailVerified: boolean;
+  phoneNumber?: string;
+  userUserRoles?: IUserUserRole[];
+  editable: boolean;
+  deletable: boolean;
+}

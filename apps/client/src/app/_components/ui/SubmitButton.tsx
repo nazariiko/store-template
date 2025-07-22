@@ -27,12 +27,7 @@ export default function SubmitButton({
 }>) {
   if (isSubmitting) {
     return (
-      <Button
-        disabled
-        className={cn("w-full", className)}
-        size={size}
-        type="submit"
-      >
+      <Button disabled className={cn("", className)} size={size} type="submit">
         <Spinner className="text-white" size="small" />
         {loadingText}
       </Button>
@@ -41,7 +36,7 @@ export default function SubmitButton({
   return (
     <Button
       variant={variant}
-      className={cn("w-full", className)}
+      className={cn("", className)}
       size={size}
       type="submit"
     >

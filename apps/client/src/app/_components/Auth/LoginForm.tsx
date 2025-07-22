@@ -144,7 +144,10 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
             </FormItem>
           )}
         />
-        <SubmitButton isSubmitting={form.formState.isSubmitting}>
+        <SubmitButton
+          className="w-full"
+          isSubmitting={form.formState.isSubmitting}
+        >
           Увійти
         </SubmitButton>
       </form>
