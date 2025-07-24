@@ -65,6 +65,8 @@ interface MultiSelectProps
     value: string;
     /** Optional icon component to display alongside the option. */
     icon?: React.ComponentType<{ className?: string }>;
+
+    disabled?: boolean;
   }[];
 
   /**
@@ -112,6 +114,10 @@ interface MultiSelectProps
    * Optional, can be used to add custom styles.
    */
   className?: string;
+
+  showSelectAll?: boolean;
+
+  showClearIcon?: boolean;
 }
 
 export const MultiSelect = React.forwardRef<
@@ -130,6 +136,8 @@ export const MultiSelect = React.forwardRef<
       modalPopover = false,
       asChild = false,
       className,
+      showSelectAll = true,
+      showClearIcon = true,
       ...props
     },
     ref,
@@ -237,17 +245,21 @@ export const MultiSelect = React.forwardRef<
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <XIcon
-                    className="text-muted-foreground mx-2 h-4 cursor-pointer"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleClear();
-                    }}
-                  />
-                  <Separator
-                    orientation="vertical"
-                    className="flex h-full min-h-6"
-                  />
+                  {showClearIcon && (
+                    <>
+                      <XIcon
+                        className="text-muted-foreground mx-2 h-4 cursor-pointer"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleClear();
+                        }}
+                      />
+                      <Separator
+                        orientation="vertical"
+                        className="flex h-full min-h-6"
+                      />
+                    </>
+                  )}
                   <ChevronDown className="text-muted-foreground mx-2 h-4 cursor-pointer" />
                 </div>
               </div>
@@ -274,21 +286,24 @@ export const MultiSelect = React.forwardRef<
             <CommandList>
               <CommandEmpty>Немає результатів.</CommandEmpty>
               <CommandGroup>
-                <CommandItem
-                  key="all"
-                  onSelect={toggleAll}
-                  className="cursor-pointer"
-                >
-                  <Checkbox
-                    checked={selectedValues.length === options.length}
-                    onCheckedChange={() => toggleAll()}
-                  />
-                  <span>(Обрати всі)</span>
-                </CommandItem>
+                {showSelectAll && (
+                  <CommandItem
+                    key="all"
+                    onSelect={toggleAll}
+                    className="cursor-pointer"
+                  >
+                    <Checkbox
+                      checked={selectedValues.length === options.length}
+                      onCheckedChange={() => toggleAll()}
+                    />
+                    <span>(Обрати всі)</span>
+                  </CommandItem>
+                )}
                 {options.map((option) => {
                   const isSelected = selectedValues.includes(option.value);
                   return (
                     <CommandItem
+                      disabled={option.disabled}
                       key={option.value}
                       onSelect={() => toggleOption(option.value)}
                       className="cursor-pointer"

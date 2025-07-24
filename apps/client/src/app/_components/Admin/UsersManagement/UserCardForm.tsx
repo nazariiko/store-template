@@ -19,6 +19,7 @@ import {
   IGetAllUserRolesResponse,
   IGetUserResponse,
   IUserRole,
+  TIME_3_SECONDS,
 } from "@repo/dto";
 import { CheckCheck, MailWarning, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -26,6 +27,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { TypographyH4 } from "@/components/ui/typography";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { getUserRank } from "@/lib/helpers/user.helpers";
+import { updateUser } from "@/lib/api/admin/user";
+import { toast } from "sonner";
+import { DeleteUserDialog } from "@/app/_components/Admin/UsersManagement/DeleteUserDialog";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z
@@ -43,15 +49,22 @@ export default function UserCardForm({
   user: IGetUserResponse;
   allUserRoles: IGetAllUserRolesResponse[];
 }) {
-  const rolesList = allUserRoles.map((userRole) => {
-    return {
-      value: userRole.alias,
-      label: userRole.uaName,
-    };
-  });
+  const router = useRouter();
   const [selectedUserRoles, setSelectedUserRoles] = useState<string[]>(
     user.userUserRoles?.map((item) => (item.userRole as IUserRole).alias) || [],
   );
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  const userRank = getUserRank();
+  const rolesList = allUserRoles.map((userRole) => {
+    const disabled = userRole.rank <= userRank;
+    return {
+      value: userRole.alias,
+      label: userRole.uaName,
+      disabled: disabled,
+    };
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,8 +74,36 @@ export default function UserCardForm({
     },
   });
 
-  const onSubmit = async (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: {
+    name: string;
+    email: string;
+    phone?: string;
+  }) => {
+    const userRoleIds: number[] = [];
+    selectedUserRoles.forEach((alias) => {
+      const userRole = allUserRoles.find(
+        (userRole) => userRole.alias === alias,
+      );
+      if (userRole) {
+        userRoleIds.push(userRole.id);
+      }
+    });
+    const { ok, message } = await updateUser(user.id, {
+      name: data.name,
+      phone: data.phone || "",
+      userRoleIds: userRoleIds,
+    });
+    if (ok) {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
+  };
+
+  const onDelete = () => {
+    setTimeout(() => {
+      router.push("/admin/settings/users");
+    }, 6000);
   };
 
   return (
@@ -73,7 +114,14 @@ export default function UserCardForm({
             <BackButton text="До реєстру" href="/admin/settings/users" />
             <div className="flex gap-x-2">
               {user.deletable && (
-                <Button variant={"destructive"} size={"icon"}>
+                <Button
+                  variant={"destructive"}
+                  size={"icon"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsDeleteOpen(true);
+                  }}
+                >
                   <Trash2 />
                 </Button>
               )}
@@ -173,12 +221,22 @@ export default function UserCardForm({
                   placeholder="Оберіть ролі"
                   variant="default"
                   maxCount={10}
+                  showClearIcon={false}
+                  showSelectAll={false}
                 />
               </div>
             </div>
           </div>
         </form>
       </Form>
+      {isDeleteOpen && (
+        <DeleteUserDialog
+          isOpen={isDeleteOpen}
+          onClose={() => setIsDeleteOpen(false)}
+          onDelete={onDelete}
+          user={user}
+        />
+      )}
     </div>
   );
 }

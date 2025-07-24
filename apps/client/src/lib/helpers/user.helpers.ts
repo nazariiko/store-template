@@ -1,4 +1,5 @@
 import { useUserStore } from "@/store/userStore";
+import { UserRoleId } from "@repo/dto";
 
 export const getUserRank = () => {
   const user = useUserStore.getState().user;

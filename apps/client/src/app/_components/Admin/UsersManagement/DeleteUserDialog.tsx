@@ -9,25 +9,26 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Form } from "@/components/ui/form";
+import { deleteUser } from "@/lib/api/admin/user";
 import { deleteUserRole } from "@/lib/api/admin/user-roles";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IGetUserRolesWithIsEditableResponse } from "@repo/dto";
+import { IGetUserResponse } from "@repo/dto";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({});
 
-export function DeleteRoleDialog({
+export function DeleteUserDialog({
   isOpen,
   onClose,
   onDelete,
-  role,
+  user,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onDelete: (id: number) => void;
-  role: IGetUserRolesWithIsEditableResponse;
+  onDelete: () => void;
+  user: IGetUserResponse;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,7 +36,7 @@ export function DeleteRoleDialog({
   });
 
   const handleDelete = async () => {
-    const { ok, message } = await deleteUserRole(role.id);
+    const { ok, message } = await deleteUser(user.id);
     if (ok) {
       toast.success(message);
       onClose();
@@ -44,8 +45,6 @@ export function DeleteRoleDialog({
       onClose();
       return;
     }
-
-    onDelete(role.id);
   };
 
   return (
@@ -58,12 +57,11 @@ export function DeleteRoleDialog({
           >
             <AlertDialogHeader>
               <AlertDialogTitle>
-                Ви впевнені, що хочете видалити роль <br />
-                <span className="font-bold">"{role.uaName}"</span>?
+                Ви впевнені, що хочете видалити користувача <br />
+                <span className="font-bold">"{user.name}"</span>?
               </AlertDialogTitle>
               <AlertDialogDescription>
-                Всі користувачі, які мають цю роль, втратять її та всі права,
-                які належать цій ролі.
+                При видаленні користувача очищаються всі дані пов'язані з ним.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

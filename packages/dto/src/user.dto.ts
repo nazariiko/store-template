@@ -1,4 +1,5 @@
 import { IBaseCreatedUpdated } from './base/base-created-updated.model';
+import { IBase } from './base/base.model';
 import { IUserUserRole } from './user-user-role.dto';
 
 export interface IUser extends IBaseCreatedUpdated {
@@ -23,7 +24,7 @@ export interface IGetUsersResponse {
   hasNextPage: boolean;
 }
 
-export interface IGetUserResponse {
+export interface IGetUserResponse extends IBase {
   name: string;
   email: string;
   isEmailVerified: boolean;
@@ -31,4 +32,10 @@ export interface IGetUserResponse {
   userUserRoles?: IUserUserRole[];
   editable: boolean;
   deletable: boolean;
+}
+
+export interface IUpdateUserDto {
+  name: string;
+  phone: string;
+  userRoleIds: number[];
 }

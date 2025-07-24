@@ -22,6 +22,8 @@ export const commonSuccessMessages = {
   user_role_created: 'Роль успішно створена',
   user_role_updated: 'Роль успішно редагована',
   user_role_deleted: 'Роль успішно видалена',
+  user_updated: 'Користувач успішно редагований',
+  user_deleted: 'Користувач успішно видалений',
 } as const;
 
 export type CommonSuccessCode = keyof typeof commonSuccessMessages;

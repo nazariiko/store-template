@@ -50,6 +50,7 @@ export class AdminUserRoleController {
         id: true,
         uaName: true,
         alias: true,
+        rank: true,
       },
     });
 
@@ -96,7 +97,7 @@ export class AdminUserRoleController {
   }
 
   @UseGuards(AdminAuthGuard, PermissionsGuard)
-  @Permissions('role_rights_change')
+  @Permissions(UserRight.ROLE_RIGHTS_CHANGE)
   @Post()
   @HttpCode(200)
   async create(@Req() request: Request, @Body() body: ICreateUserRoleDto) {
@@ -181,7 +182,7 @@ export class AdminUserRoleController {
   }
 
   @UseGuards(AdminAuthGuard, PermissionsGuard)
-  @Permissions('role_rights_change')
+  @Permissions(UserRight.ROLE_RIGHTS_CHANGE)
   @Put(':id')
   @HttpCode(200)
   async update(
@@ -321,7 +322,7 @@ export class AdminUserRoleController {
   }
 
   @UseGuards(AdminAuthGuard, PermissionsGuard)
-  @Permissions('role_rights_change')
+  @Permissions(UserRight.ROLE_RIGHTS_CHANGE)
   @Delete(':id')
   @HttpCode(200)
   async delete(@Param('id', ParseIntPipe) id: number, @Req() request: Request) {

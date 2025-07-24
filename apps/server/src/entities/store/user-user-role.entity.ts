@@ -20,5 +20,5 @@ export class UserUserRole extends BaseCreatedUpdated {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userRoleId' })
-  userRole?: UserRole;
+  userRole: UserRole;
 }

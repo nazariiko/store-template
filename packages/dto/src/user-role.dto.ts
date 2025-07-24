@@ -37,4 +37,5 @@ export interface IGetUserRolesWithIsEditableResponse extends IBase {
 export interface IGetAllUserRolesResponse extends IBase {
   uaName: string;
   alias: string;
+  rank: number;
 }
